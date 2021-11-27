@@ -1,11 +1,11 @@
 import { Schema, model } from 'mongoose';
-import { Blog } from './types';
+import { Blog } from '../types/types';
 
 // Blogin schema
 const schema = new Schema<Blog>({
-  name: { type: String, required: true },
-  email: { type: String },
-  text: { type: String, required: true },
+	name: { type: String, required: true },
+	email: { type: String },
+	text: { type: String, required: true },
 });
 
 // Blog scheman model
