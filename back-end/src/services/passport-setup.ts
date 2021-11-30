@@ -7,13 +7,11 @@ dotenv.config();
 
 // ottaa tiedot mitkä laittaa keksiin
 passport.serializeUser((user: any, done) => {
-	console.log('users id: ', user.id);
 	done(null, user.id);
 });
 
 passport.deserializeUser((id: string, done) => {
 	UserModel.findById(id).then((user) => {
-		console.log('user is,', user);
 		done(null, user);
 	});
 });
@@ -29,7 +27,6 @@ passport.use(
 			UserModel.findOne({ email: profile._json.email }).then((existingUser) => {
 				if (existingUser) {
 					// tarkistetaan löytyykö user tietokannasta, jos löytyy ei luoda uutta
-					console.log('Existing user is', existingUser);
 					done(null, existingUser);
 				} else {
 					new UserModel({
@@ -38,7 +35,6 @@ passport.use(
 					})
 						.save()
 						.then((newUser) => {
-							console.log('new user created, ', newUser);
 							done(null, newUser);
 						});
 				}

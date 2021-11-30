@@ -20,6 +20,8 @@ const options = {
     credentials: true,
 };
 app.use(cors_1.default(options));
+app.use(express_1.default.json());
+app.use(express_1.default.urlencoded({ extended: true }));
 app.use(cookie_session_1.default({
     // aika millisekunneissa kauanko keksi "elää"
     maxAge: 60 * 60 * 60,
@@ -44,14 +46,14 @@ app.get('/posts', (req, res) => {
     });
 });
 // Uuden blogin lisääminen MongoDB collectioniin
-app.get('/add-blog', (req, res) => {
-    const blog = new blogModel_1.BlogModel({
-        name: 'Minä',
-        email: 'Moi',
-        text: 'this is my blog',
-    });
-    blog.save();
-});
+// app.get('/add-blog', (req: Request, res: Response) => {
+// 	const blog = new BlogModel({
+// 		name: 'Minä',
+// 		email: 'Moi',
+// 		text: 'this is my blog',
+// 	});
+// 	blog.save();
+// });
 // google authi
 app.get('/google', passport_1.default.authenticate('google', {
     scope: ['email', 'profile'],
@@ -64,7 +66,26 @@ app.get('/isAuthenticated', isAuthenticated_1.checkAuthentication, function (req
     //do something only if user is authenticated
     res.send({ isAuthenticated: true });
 });
+app.get('/user-details', (req, res) => {
+    res.send(req.user);
+});
 app.post('/signout', (req, res) => {
     req.session = null;
     res.status(200).send(true);
+});
+app.post('/new-blog', (req, res) => {
+    const { name, email, text } = req.body;
+    const blog = new blogModel_1.BlogModel({
+        name: name,
+        email: email,
+        text: text,
+    });
+    blog.save((err, result) => {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            res.json(result);
+        }
+    });
 });

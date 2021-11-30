@@ -30,12 +30,10 @@ const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 // ottaa tiedot mitkä laittaa keksiin
 passport_1.default.serializeUser((user, done) => {
-    console.log('users id: ', user.id);
     done(null, user.id);
 });
 passport_1.default.deserializeUser((id, done) => {
     userModel_1.UserModel.findById(id).then((user) => {
-        console.log('user is,', user);
         done(null, user);
     });
 });
@@ -47,7 +45,6 @@ passport_1.default.use(new passport_google_oauth20_1.Strategy({
     userModel_1.UserModel.findOne({ email: profile._json.email }).then((existingUser) => {
         if (existingUser) {
             // tarkistetaan löytyykö user tietokannasta, jos löytyy ei luoda uutta
-            console.log('Existing user is', existingUser);
             done(null, existingUser);
         }
         else {
@@ -57,7 +54,6 @@ passport_1.default.use(new passport_google_oauth20_1.Strategy({
             })
                 .save()
                 .then((newUser) => {
-                console.log('new user created, ', newUser);
                 done(null, newUser);
             });
         }

@@ -6,6 +6,7 @@ import passport from 'passport';
 import './services/passport-setup';
 import cookieSession from 'cookie-session';
 import { checkAuthentication } from './middleware/isAuthenticated';
+import bodyParser from 'body-parser';
 
 const app: Application = express();
 const port = 8000;
@@ -19,6 +20,9 @@ const options: cors.CorsOptions = {
 };
 
 app.use(cors(options));
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(
 	cookieSession({
@@ -49,15 +53,15 @@ app.get('/posts', (req: Request, res: Response) => {
 });
 
 // Uuden blogin lisääminen MongoDB collectioniin
-app.get('/add-blog', (req: Request, res: Response) => {
-	const blog = new BlogModel({
-		name: 'Minä',
-		email: 'Moi',
-		text: 'this is my blog',
-	});
+// app.get('/add-blog', (req: Request, res: Response) => {
+// 	const blog = new BlogModel({
+// 		name: 'Minä',
+// 		email: 'Moi',
+// 		text: 'this is my blog',
+// 	});
 
-	blog.save();
-});
+// 	blog.save();
+// });
 
 // google authi
 app.get(
@@ -77,7 +81,29 @@ app.get('/isAuthenticated', checkAuthentication, function (req: Request, res: Re
 	res.send({ isAuthenticated: true });
 });
 
+app.get('/user-details', (req: Request, res: Response) => {
+	res.send(req.user);
+});
+
 app.post('/signout', (req: Request, res: Response) => {
 	req.session = null;
 	res.status(200).send(true);
+});
+
+app.post('/new-blog', (req: Request, res: Response) => {
+	const { name, email, text } = req.body;
+
+	const blog = new BlogModel({
+		name: name,
+		email: email,
+		text: text,
+	});
+
+	blog.save((err, result) => {
+		if (err) {
+			console.log(err);
+		} else {
+			res.json(result);
+		}
+	});
 });
